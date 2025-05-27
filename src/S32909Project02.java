@@ -5,8 +5,9 @@ import javax.swing.*;
 
 public class S32909Project02 extends JFrame {
     public static void main(String[] args) {
-        Board board = new Board();
-        MainWindow mw = new MainWindow(board);
-        mw.setLocationRelativeTo(null);
+        SwingUtilities.invokeLater(() ->{
+            MainWindow mw = new MainWindow();
+            mw.setLocationRelativeTo(null);
+        });
     }
 }

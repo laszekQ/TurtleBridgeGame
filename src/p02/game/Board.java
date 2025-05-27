@@ -9,133 +9,151 @@ import java.util.*;
 import java.util.Random;
 
 public class Board implements KeyListener {
-    private final GameThread gameThread = GameThread.getInstance(this);
-    private final ArrayList<GameEventListener> listeners = new ArrayList<>();
-    private GameEventListener first_digit = null;
-
-    public static final int x = 12;
-    public static final int y = 5;
-
+    private int[][] board = new int[12][5];
+    private GameThread game_thread = GameThread.getInstance(this);
     private boolean running = false;
-    private final int[][] board; // f - fish, t - turtle, w - water
-    public static final int TURTLE_UP = 't';
-    public static final int TURTLE_DOWN = 'd';
-    public static final int FISH = 'f';
-    public static final int WATER = 'w';
-    public static final int PLAYER = 'p';
+    private int pos_x = 0, pos_y = 0;
+    private boolean supply = false;
+    private boolean supplier_appeared = true;
+    private boolean receiver_appeared = false;
+    private int last_key = 0;
 
-    private int p_pos_x;
-    private int p_pos_y;
-    private boolean supply = true;
-    private int last_key = -1;
+
+    public static final int player = 'p';
+    public static final int turtle_up = 't';
+    public static final int turtle_down = 'd';
+    public static final int water = 'w';
+    public static final int fish = 'f';
+    public static final int empty = 'e';
+    public static final int barrier = 'b';
+
 
     public Board() {
-        board = new int[x][y];
-        p_pos_x = 0;
-        p_pos_y = 0;
-        for(int i = 1; i < x - 1; i += 2)
-            board[i][2] = TURTLE_DOWN;
-        board[1][1] = PLAYER;
+        for(int i = 0; i < 12; i++) {
+            for(int j = 0; j < 5; j++) {
+                board[i][j] = empty;
+            }
+        }
+        board[0][1] = barrier;
+        //board[11][1] = barrier;
+        for(int i = 0; i < 12; i++) {
+            for(int j = 3; j < 5; j++) {
+                board[i][j] = water;
+            }
+        }
+        board[pos_x][pos_y] = player;
+        for(int i = 2; i <= 10; i += 2)
+            board[i][2] = turtle_down;
     }
 
-    public boolean isRunning() {
+    public boolean isRunning(){
         return running;
     }
 
-    public ArrayList<GameEventListener> getListeners() {
-        return listeners;
+    public void addListener(GameEventListener listener) {
+        game_thread.addListener(listener);
     }
 
-    public void addEventListener(GameEventListener listener) {
-        listeners.add(listener);
+    public int[][] getBoard(){
+        return board;
     }
 
-    public void setFirstDigit(GameEventListener first_digit) {
-        this.first_digit = first_digit;
+    public int get_pos_x(){
+        return pos_x;
     }
 
-    public GameEventListener getFirstDigit() {
-        return first_digit;
+    public int get_pos_y(){
+        return pos_y;
     }
 
-    public void addSupply(){
-        supply = true;
+    public int get_last_key(){
+        return last_key;
+    }
+
+    public void changeBoard(int[][] new_board){
+        board = new_board;
+    }
+
+    public void updatePlayerPos(int x, int y){
+        board[pos_x][pos_y] = empty;
+        board[x][y] = player;
+        pos_x = x;
+        pos_y = y;
+    }
+
+    public void addFish(int x){
+        board[x][4] = fish;
     }
 
     public boolean isSupplied(){
         return supply;
     }
 
-
-    public int[][] getBoard() {
-        return board;
+    public void supplyPlayer(){
+        supply = true;
     }
 
-    public Position getPlayerPos() {
-        return new Position(p_pos_x, p_pos_y);
-    }
-    public void setPlayerPos(int x, int y) {
-        p_pos_x = x;
-        p_pos_y = y;
-    }
-    public void setPlayerPos(Position pos) {
-        p_pos_x = pos.x;
-        p_pos_y = pos.y;
+    public void supplyReceiver(){
+        supply = false;
     }
 
-    public int getLastKey() {
-        return last_key;
+    public boolean isReceiverAppeared(){
+        return receiver_appeared;
     }
 
-    public void spawnFish() {
-        LinkedList<Integer> free_cells = new LinkedList<>();
-        for(int i = 0; i < x; i++)
-            if(board[i][y - 1] == 'e')
-                free_cells.add(i);
-        int nf_pos_x = new Random().nextInt(free_cells.size());
-        board[nf_pos_x][y - 1] = 'f';
+    public void turnReceiver(boolean value){
+        receiver_appeared = value;
+    }
+
+    public boolean isSupplierAppeared(){
+        return supplier_appeared;
+    }
+
+    public void turnSupplier(boolean value){
+        receiver_appeared = value;
+    }
+
+    public void callDefeat(){
+        running = false;
     }
 
     @Override
-    public void keyPressed(KeyEvent e){
+    public void keyPressed(KeyEvent e) {
         switch(e.getKeyCode()) {
             case KeyEvent.VK_A:
-                if(p_pos_x > 0) {
-                    p_pos_x--;
-                    p_pos_y--;
+                if(pos_x > 1 && pos_x < 11 && pos_y != 0){
+                    updatePlayerPos(pos_x - 1, pos_y - 1);
+                }
+                else if(pos_x == 1){
+                    updatePlayerPos(0, pos_y);
+                }
+                else if(pos_x == 11){
+                    updatePlayerPos(pos_x - 1, pos_y + 1);
                 }
                 break;
             case KeyEvent.VK_D:
-                if(p_pos_x < x - 1) {
-                    p_pos_x++;
-                    p_pos_y--;
+                if(pos_x <= 10 && pos_y != 0){
+                    updatePlayerPos(pos_x + 1, pos_y - 1);
+                }
+                else if(pos_x == 0){
+                    updatePlayerPos(1, 0);
                 }
                 break;
         }
+        System.out.println("Pressed key: !" + e.getKeyCode());
         last_key = e.getKeyCode();
+        game_thread.notifyListeners();
     }
 
     @Override
-    public void keyReleased(KeyEvent e){
-        switch(e.getKeyCode()) {
-            case KeyEvent.VK_S:
-                if(!running) {
-                    running = true;
-                    gameThread.startOrResume();
-                }
-                break;
+    public void keyReleased(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_S && !running) {
+            running = true;
+            if(!game_thread.isAlive())
+                game_thread.start();
+            System.out.println("Started!");
         }
     }
 
-    @Override
-    public void keyTyped(KeyEvent e){}
-
-    static class Position{
-        public int x, y;
-
-        Position(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
+    @Override public void keyTyped(KeyEvent e) {}
 }

@@ -4,37 +4,17 @@ import p02.game.Board;
 import p02.game.events.*;
 
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 
-public class SpriteTable extends AbstractTableModel implements GameEventListener {
-    private final Board board;
+public class SpriteTable extends JTable implements GameEventListener {
 
-    public SpriteTable(Board board) {
-        this.board = board;
-    }
-
-    @Override
-    public int getRowCount() {
-        return board.getBoard()[0].length;
-    }
-
-    @Override
-    public int getColumnCount() {
-        return board.getBoard().length;
-    }
-
-    @Override
-    public Object getValueAt(int rowIndex, int columnIndex) {
-        return board.getBoard()[columnIndex][rowIndex];
-    }
-
-    public void update(){
-        fireTableDataChanged();
+    SpriteTable(Board board) {
+        super(new SpriteTableModel(board));
+        this.setDefaultRenderer(Object.class, new SpriteCellRenderer());
     }
 
     @Override
     public void handleTickEvent(TickEvent e){
-        update();
+        repaint();
     }
 
     @Override
