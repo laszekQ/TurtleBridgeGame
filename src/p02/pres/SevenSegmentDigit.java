@@ -1,8 +1,5 @@
 package p02.pres;
-import p02.game.events.GameEventListener;
-import p02.game.events.PlusOneEvent;
-import p02.game.events.ResetEvent;
-import p02.game.events.StartEvent;
+import p02.game.events.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,13 +28,17 @@ public class SevenSegmentDigit extends JPanel implements GameEventListener {
 
     }
 
+    @Override public void handleTickEvent(TickEvent e){}
+
     public void handlePlusOneEvent(PlusOneEvent e) {
         value += 1;
         if(value == 10){
             value = 0;
+            repaint();
             next.handlePlusOneEvent(new PlusOneEvent(e));
         }
     }
+
 
     @Override
     public void paintComponent(Graphics g){}
