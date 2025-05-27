@@ -24,6 +24,7 @@ public class SpriteCellRenderer extends DefaultTableCellRenderer {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         label.setText("");
         label.setHorizontalAlignment(JLabel.CENTER);
+        label.setOpaque(false);
 
         int cell_val = (int) value;
         switch (cell_val) {
@@ -31,7 +32,7 @@ public class SpriteCellRenderer extends DefaultTableCellRenderer {
                 label.setIcon(new ImageIcon(player.getScaledInstance(size, size, Image.SCALE_SMOOTH)));
                 break;
             case Board.fish:
-                label.setIcon(new ImageIcon(fish.getScaledInstance(size, size, Image.SCALE_SMOOTH)));
+                label.setIcon(new ImageIcon(fish.getScaledInstance(size / 2, size / 2, Image.SCALE_SMOOTH)));
                 break;
             case Board.turtle_up:
                 label.setIcon(new ImageIcon(turtle_up.getScaledInstance(size, size, Image.SCALE_SMOOTH)));
@@ -40,12 +41,11 @@ public class SpriteCellRenderer extends DefaultTableCellRenderer {
                 label.setIcon(new ImageIcon(turtle_down.getScaledInstance(size, size, Image.SCALE_SMOOTH)));
                 break;
             case Board.water:
-                label.setIcon(new ImageIcon(water.getScaledInstance(size, size, Image.SCALE_SMOOTH)));
+                //label.setIcon(new ImageIcon(water.getScaledInstance(size, size, Image.SCALE_SMOOTH)));
+                label.setIcon(null);
                 break;
             default:
                 label.setIcon(null);
-                label.setBackground(Color.WHITE);
-                label.setOpaque(true);
         }
         return label;
     }

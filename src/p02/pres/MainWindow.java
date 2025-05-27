@@ -1,6 +1,7 @@
 package p02.pres;
 
 import p02.game.Board;
+import p02.game.events.TickEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,7 +25,10 @@ public class MainWindow extends JFrame{
         SpriteTable sprite_table = new SpriteTable(board);
         sprite_table.setOpaque(false);
         sprite_table.setRowHeight(64);
-        sprite_table.setAutoResizeMode(0);
+        sprite_table.setShowGrid(false);
+        sprite_table.setRowSelectionAllowed(false);
+        sprite_table.setColumnSelectionAllowed(false);
+        sprite_table.setCellSelectionEnabled(false);
 
         board.addListener(sprite_table);
 
