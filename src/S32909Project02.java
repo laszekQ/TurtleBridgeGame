@@ -7,7 +7,6 @@ public class S32909Project02 extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() ->{
             MainWindow mw = new MainWindow();
-            mw.setLocationRelativeTo(null);
         });
     }
 }

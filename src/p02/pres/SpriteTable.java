@@ -9,7 +9,13 @@ public class SpriteTable extends JTable implements GameEventListener {
 
     SpriteTable(Board board) {
         super(new SpriteTableModel(board));
-        this.setDefaultRenderer(Object.class, new SpriteCellRenderer());
+        setDefaultRenderer(Object.class, new SpriteCellRenderer());
+        setOpaque(false);
+        setRowHeight(64);
+        setShowGrid(false);
+        setRowSelectionAllowed(false);
+        setColumnSelectionAllowed(false);
+        setCellSelectionEnabled(false);
     }
 
     @Override

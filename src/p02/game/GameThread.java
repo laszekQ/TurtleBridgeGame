@@ -1,9 +1,6 @@
 package p02.game;
 
-import p02.game.events.GameEvent;
-import p02.game.events.GameEventListener;
-import p02.game.events.PlusOneEvent;
-import p02.game.events.TickEvent;
+import p02.game.events.*;
 
 import java.awt.event.KeyEvent;
 import java.security.Key;
@@ -11,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class GameThread extends Thread {
+public class GameThread extends Thread implements GameEventListener {
     private static GameThread instance;
     private Board board;
     private final int base_sleeptime = 1000;
     private int sleeptime = base_sleeptime;
     private final List<GameEventListener> tick_listeners = new ArrayList<>();
+    private GameEventListener d_digit = null;
 
     private GameThread(Board b) {
         board = b;
@@ -31,6 +29,9 @@ public class GameThread extends Thread {
 
     public void addListener(GameEventListener l) {
         tick_listeners.add(l);
+    }
+    public void linkDigit(GameEventListener l) {
+        d_digit = l;
     }
 
     public void notifyListeners() {
@@ -101,6 +102,9 @@ public class GameThread extends Thread {
                             player_pos_x--;
                             player_pos_y++;
                         }
+                        else{
+                            player_pos_x--;
+                        }
                         break;
                     case KeyEvent.VK_D:
                         if(player_pos_x != 11){
@@ -117,6 +121,7 @@ public class GameThread extends Thread {
             else if(player_pos_x == 11 && player_pos_y == 0 && board.isReceiverAppeared() && board.isSupplied()){
                 //trigger PlusOneEvent
                 board.supplyReceiver();
+                d_digit.handlePlusOneEvent(new PlusOneEvent(this));
             }
 
             if(!board.isReceiverAppeared() && new Random().nextDouble() < 0.4)
@@ -142,7 +147,28 @@ public class GameThread extends Thread {
             }
 
             if(sleeptime > 260)
-                sleeptime -= 10;
+                sleeptime -= 1;
         }
+    }
+
+    @Override
+    public void handleStartEvent(StartEvent e) {
+        if(!isAlive())
+            start();
+    }
+
+    @Override
+    public void handleResetEvent(ResetEvent e) {
+
+    }
+
+    @Override
+    public void handleTickEvent(TickEvent e) {
+
+    }
+
+    @Override
+    public void handlePlusOneEvent(PlusOneEvent e) {
+        this.interrupt();
     }
 }

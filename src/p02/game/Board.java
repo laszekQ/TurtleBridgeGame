@@ -1,6 +1,7 @@
 package p02.game;
 
 import p02.game.events.GameEventListener;
+import p02.game.events.StartEvent;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -19,13 +20,15 @@ public class Board implements KeyListener {
     private int last_key = 0;
 
 
-    public static final int player = 'p';
+    public static final int player_empty = 'p';
+    public static final int player_supplied = 's';
     public static final int turtle_up = 't';
     public static final int turtle_down = 'd';
     public static final int water = 'w';
     public static final int fish = 'f';
     public static final int empty = 'e';
     public static final int barrier = 'b';
+    private int player = player_empty;
 
 
     public Board() {
@@ -54,8 +57,16 @@ public class Board implements KeyListener {
         game_thread.addListener(listener);
     }
 
+    public void linkDigit(GameEventListener l){
+        game_thread.linkDigit(l);
+    }
+
     public int[][] getBoard(){
         return board;
+    }
+
+    public GameThread getThread(){
+        return game_thread;
     }
 
     public int get_pos_x(){
@@ -91,10 +102,12 @@ public class Board implements KeyListener {
 
     public void supplyPlayer(){
         supply = true;
+        player = player_supplied;
     }
 
     public void supplyReceiver(){
         supply = false;
+        player = player_empty;
     }
 
     public boolean isReceiverAppeared(){
@@ -124,12 +137,10 @@ public class Board implements KeyListener {
                 if(pos_x > 1 && pos_x < 11 && pos_y != 0){
                     updatePlayerPos(pos_x - 1, pos_y - 1);
                 }
-                else if(pos_x == 1){
-                    updatePlayerPos(0, pos_y);
-                }
                 else if(pos_x == 11){
                     updatePlayerPos(pos_x - 1, pos_y + 1);
                 }
+                last_key = e.getKeyCode();
                 break;
             case KeyEvent.VK_D:
                 if(pos_x <= 10 && pos_y != 0){
@@ -138,10 +149,9 @@ public class Board implements KeyListener {
                 else if(pos_x == 0){
                     updatePlayerPos(1, 0);
                 }
+                last_key = e.getKeyCode();
                 break;
         }
-        System.out.println("Pressed key: !" + e.getKeyCode());
-        last_key = e.getKeyCode();
         game_thread.notifyListeners();
     }
 
@@ -149,9 +159,7 @@ public class Board implements KeyListener {
     public void keyReleased(KeyEvent e) {
         if(e.getKeyCode() == KeyEvent.VK_S && !running) {
             running = true;
-            if(!game_thread.isAlive())
-                game_thread.start();
-            System.out.println("Started!");
+            game_thread.handleStartEvent(new StartEvent(this));
         }
     }
 
