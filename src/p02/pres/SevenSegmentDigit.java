@@ -18,7 +18,8 @@ public class SevenSegmentDigit extends JPanel implements GameEventListener {
             { true, false, true, true, true, true, true },
             { true, true, true, false, false, false, false },
             { true, true, true, true, true, true, true },
-            { true, true, true, true, false, true, true }
+            { true, true, true, true, false, true, true },
+            { false, false, false, false, false, false, false },
     };
             // A    B     C     D     E      F     G
 
@@ -28,6 +29,14 @@ public class SevenSegmentDigit extends JPanel implements GameEventListener {
         setBackground(null);
         setOpaque(false);
         setPreferredSize(new Dimension(25, 50));
+    }
+
+    public int notZero() {
+        int sum = (value != 0) ? 1 : 0;
+        if(nextListener.getClass() == SevenSegmentDigit.class) {
+            sum += ((SevenSegmentDigit) nextListener).notZero();
+        }
+        return sum;
     }
 
     @Override
@@ -63,12 +72,14 @@ public class SevenSegmentDigit extends JPanel implements GameEventListener {
     public void handleStartEvent(StartEvent e) {
         value = 0;
         repaint();
+        nextListener.handleStartEvent(new StartEvent(this));
     }
 
     @Override
     public void handleResetEvent(ResetEvent e) {
-        value = 0;
+        value = 10;
         repaint();
+        nextListener.handleResetEvent(new ResetEvent(this));
     }
 
     @Override

@@ -13,11 +13,16 @@ public class SpriteCellRenderer extends DefaultTableCellRenderer {
 
     private final ImageIcon player_empty = scale(new ImageIcon("assets/player_empty.png"), 1);
     private final ImageIcon player_supplied = scale(new ImageIcon("assets/player_supplied.png"), 1);
+    private final ImageIcon player_getting = scale(new ImageIcon("assets/supplying.png"), 1);
+    private final ImageIcon player_drowning = scale(new ImageIcon("assets/drowning.png"), 1);
+    private final ImageIcon receiver = scale(new ImageIcon("assets/receiver.png"), 1);
     private final ImageIcon fish = scale(new ImageIcon("assets/fish.png"), 2);
     private final ImageIcon turtle_up1 = scale(new ImageIcon("assets/turtle_up1.png"), 1);
     private final ImageIcon turtle_up2 = scale(new ImageIcon("assets/turtle_up2.png"),1);
     private final ImageIcon turtle_down1 = scale(new ImageIcon("assets/turtle_down1.png"),1);
     private final ImageIcon turtle_down2 = scale(new ImageIcon("assets/turtle_down2.png"), 1);
+    private final ImageIcon turtle_dive1 = scale(new ImageIcon("assets/turtle_dive1.png"), 1);
+    private final ImageIcon turtle_dive2 = scale(new ImageIcon("assets/turtle_dive2.png"), 1);
 
     private final HashMap<Integer, ImageIcon> image_map = new HashMap<>();
 
@@ -27,9 +32,13 @@ public class SpriteCellRenderer extends DefaultTableCellRenderer {
 
         image_map.put(Board.player_empty, player_empty);
         image_map.put(Board.player_supplied, player_supplied);
+        image_map.put(Board.player_getting, player_getting);
+        image_map.put(Board.player_drowning, player_drowning);
+        image_map.put(Board.receiver, receiver);
         image_map.put(Board.fish, fish);
         image_map.put(Board.turtle_up, turtle_up1);
         image_map.put(Board.turtle_down, turtle_down1);
+        image_map.put(Board.turtle_dive, turtle_dive1);
     }
 
     private ImageIcon scale(ImageIcon img , int k){
@@ -50,6 +59,8 @@ public class SpriteCellRenderer extends DefaultTableCellRenderer {
             label.setIcon(turtle_up2);
         if(cell_val == Board.turtle_down && new Random().nextDouble() < 0.3)
             label.setIcon(turtle_down2);
+        if(cell_val == Board.turtle_dive && new Random().nextDouble() < 0.3)
+            label.setIcon(turtle_dive2);
 
         return label;
     }
