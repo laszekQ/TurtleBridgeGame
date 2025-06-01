@@ -33,7 +33,7 @@ public class Board implements KeyListener {
     public static final int fish = 'f';
     public static final int empty = 'e';
     public static final int barrier = 'b';
-    private int player = player_empty;
+    private int player = player_getting;
 
     public Board() {
         super();
@@ -150,26 +150,22 @@ public class Board implements KeyListener {
 
         switch(e.getKeyCode()) {
             case KeyEvent.VK_A:
-                if(pos_x > 1 && pos_x < 11 && pos_y != 0){
+                if(pos_x > 1 && pos_x < 11 && pos_y != 0)
                     updatePlayerPos(pos_x - 1, pos_y - 1);
-                }
-                else if(pos_x == 11){
+                else if(pos_x == 11)
                     updatePlayerPos(pos_x - 1, pos_y + 1);
-                }
                 last_key = e.getKeyCode();
                 break;
             case KeyEvent.VK_D:
-                if(pos_x <= 10 && pos_y != 0){
+                if(pos_x <= 10 && pos_y != 0)
                     updatePlayerPos(pos_x + 1, pos_y - 1);
-                }
-                else if(pos_x == 0){
+                else if(pos_x == 0) {
                     updatePlayerPos(1, 0);
+                    player = player_supplied;
                 }
                 last_key = e.getKeyCode();
                 break;
         }
-        if(player == player_getting)
-            player = player_supplied;
         game_thread.notifyListeners();
     }
 

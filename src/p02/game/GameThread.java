@@ -23,7 +23,7 @@ public class GameThread extends Thread implements GameEventListener {
     }
 
     public static GameThread getInstance(Board b) {
-        if (instance == null || !instance.isAlive()) {
+        if (instance == null) {
             instance = new GameThread(b);
         }
         return instance;
@@ -32,7 +32,6 @@ public class GameThread extends Thread implements GameEventListener {
     public void addListener(GameEventListener l) {
         tick_listeners.add(l);
     }
-    public void setListeners(List<GameEventListener> l) {tick_listeners.addAll(l);}
     public void linkDigit(SevenSegmentDigit l) {
         d_digit = l;
     }
@@ -60,15 +59,18 @@ public class GameThread extends Thread implements GameEventListener {
 
     @Override
     public void run() {
-        while(running) {
-            int[][] board_copy = board.getBoard();
-
-            for(int i = 2; i <= 10; i += 2){
-                if(board_copy[i][4] == Board.fish && board_copy[i][3] == Board.water){
-                    board_copy[i][4] = Board.water;
-                    board_copy[i][3] = Board.fish;
+        while(true) {
+            synchronized (this) {
+                while(!running) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
+
+            int[][] board_copy = board.getBoard();
 
             if(new Random().nextDouble() < 0.3) {
                 int k = d_digit.notZero();
@@ -127,6 +129,13 @@ public class GameThread extends Thread implements GameEventListener {
                     board_copy[i][2] = Board.turtle_down;
             }
 
+            for(int i = 2; i <= 10; i += 2){
+                if(board_copy[i][4] == Board.fish && board_copy[i][3] == Board.water){
+                    board_copy[i][4] = Board.water;
+                    board_copy[i][3] = Board.fish;
+                }
+            }
+
             if(!board.isReceiverAppeared() && new Random().nextDouble() < 0.4)
                 board.turnReceiver(true);
             else if(new Random().nextDouble() < 0.4)
@@ -158,22 +167,20 @@ public class GameThread extends Thread implements GameEventListener {
     }
 
     @Override
-    public void handleStartEvent(StartEvent e) {
+    public synchronized void handleStartEvent(StartEvent e) {
         if(!running) {
             running = true;
-            instance = new GameThread(board);
-            instance.setListeners(tick_listeners);
-            instance.setDigit(d_digit);
-            instance.d_digit.handleStartEvent(e);
-            instance.start();
+            notify();
+            d_digit.handleStartEvent(e);
+            if(!isAlive())
+                start();
         }
     }
 
     @Override
-    public void handleResetEvent(ResetEvent e) {
+    public synchronized void handleResetEvent(ResetEvent e) {
         running = false;
         sleeptime = base_sleeptime;
-        interrupt();
     }
 
     @Override

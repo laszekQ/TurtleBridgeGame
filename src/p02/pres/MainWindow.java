@@ -49,5 +49,10 @@ public class MainWindow extends JFrame{
         setLocationRelativeTo(null);
         setFocusable(true);
         setVisible(true);
+
+        SwingUtilities.invokeLater(() -> {
+            revalidate();
+            repaint();
+        });
     }
 }
