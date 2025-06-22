@@ -1,8 +1,7 @@
 package p02.pres;
 
 import p02.game.Board;
-import p02.game.events.StartEvent;
-import p02.game.events.TickEvent;
+import p02.game.events.PlusOneEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +22,12 @@ public class MainWindow extends JFrame{
 
         BackgroundPanel bgPanel = new BackgroundPanel();
         SpriteTable sprite_table = new SpriteTable(board);
-        SevenSegmentDigit d00 = new SevenSegmentDigit(board.getThread());
+        SevenSegmentDigit d00 = new SevenSegmentDigit(board.getThread()){
+            @Override
+            public void handlePlusOneEvent(PlusOneEvent e){
+                nextListener.handlePlusOneEvent(new PlusOneEvent(this));
+            }
+        };
         SevenSegmentDigit d0 = new SevenSegmentDigit(d00);
         SevenSegmentDigit d = new SevenSegmentDigit(d0);
 

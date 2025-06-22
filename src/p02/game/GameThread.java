@@ -60,15 +60,14 @@ public class GameThread extends Thread implements GameEventListener {
     @Override
     public void run() {
         while(true) {
-            synchronized (this) {
-                while(!running) {
+            if(!running)
+                synchronized (this) {
                     try {
                         wait();
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 }
-            }
 
             int[][] board_copy = board.getBoard();
 

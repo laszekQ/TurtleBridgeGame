@@ -1,7 +1,6 @@
 package p02.pres;
 
 import p02.game.Board;
-import p02.game.events.*;
 
 import javax.swing.table.AbstractTableModel;
 

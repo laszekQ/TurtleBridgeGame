@@ -5,7 +5,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class SpriteCellRenderer extends DefaultTableCellRenderer {
