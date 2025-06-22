@@ -15,7 +15,7 @@ public class MainWindow extends JFrame{
         overlayPanel.setLayout(new OverlayLayout(overlayPanel));
         overlayPanel.setPreferredSize(new Dimension(800, 600));
 
-        setTitle("S32909 Project");
+        setTitle("Turtle Bridge");
         setSize(800, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
